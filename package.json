@@ -1,0 +1,23 @@
+{
+  "name": "pylot",
+  "version": "0.1.0",
+  "description": "Agentic payout brain routing between PayPal Payouts (fiat) and PYUSD (on-chain) for the global creator & gig economy. An MCP extension to PayPal's agent surface.",
+  "type": "module",
+  "scripts": {
+    "start": "node dashboard.mjs",
+    "live": "node --env-file=.env dashboard.mjs",
+    "demo": "node demo.mjs",
+    "dashboard": "node dashboard.mjs",
+    "test": "node --test",
+    "mcp": "node src/mcp-server.mjs",
+    "check": "node --env-file=.env scripts/check-paypal.mjs",
+    "check:pyusd": "node --env-file=.env scripts/check-pyusd.mjs",
+    "crypto-order": "node --env-file=.env scripts/fund-crypto-order.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.135.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "ethers": "^6.17.0"
+  }
+}

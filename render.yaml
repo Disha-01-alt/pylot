@@ -1,0 +1,31 @@
+# Render Blueprint — deploys the Pylot Treasury Console as a public web service.
+# Render is a PayPal AI Hackathon sponsor (credits available). After pushing this repo
+# to GitHub, create a Blueprint on render.com pointing at it, then set the secret env
+# vars (PayPal + PYUSD + optional LLM) in the Render dashboard — never commit them.
+services:
+  - type: web
+    name: pylot
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm install ethers @anthropic-ai/sdk @modelcontextprotocol/sdk
+    startCommand: node dashboard.mjs
+    envVars:
+      - key: PYLOT_LIVE
+        value: "0"            # public URL runs SAFE dry-run (anyone can click). Flip to "1"
+                              # + set the secrets below for a live-rail deployment.
+      - key: PAYPAL_ENV
+        value: sandbox
+      - key: PAYPAL_CLIENT_ID
+        sync: false           # set in the Render dashboard (secret)
+      - key: PAYPAL_SECRET
+        sync: false
+      - key: PYUSD_NETWORK
+        value: sepolia
+      - key: PYUSD_RPC_URL
+        sync: false
+      - key: PYUSD_PRIVATE_KEY
+        sync: false
+      - key: PYUSD_TOKEN_ADDRESS
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false           # optional; your own key only
