@@ -5,7 +5,7 @@
 // Run:  node dashboard.mjs   then open http://localhost:3000  (set PORT=... if in use)
 // ponytail: one file, node:http (zero deps). AG Grid + Google Fonts from CDN — needs internet.
 import { createServer } from 'node:http';
-import { readAll, record, clear } from './src/ledger.mjs';
+import { readAll, record } from './src/ledger.mjs';
 import { reconcileAll } from './src/reconcile.mjs';
 import { payBatch } from './src/pylot.mjs';
 import { interpret } from './src/interpret.mjs';
@@ -143,7 +143,7 @@ const PAGE = `<!doctype html><html lang="en"><head><meta charset="utf-8">
 </style></head><body>
 <header>
   <div class="brandrow">
-    <h1><span class="c">C</span>orridor</h1>
+    <h1><span class="c">P</span>ylot</h1>
     <span class="sub">Treasury Console</span>
     <span class="badge __MODE_CLASS__" id="mode"><span class="dot"></span>__MODE__</span>
   </div>
@@ -186,7 +186,7 @@ const PAGE = `<!doctype html><html lang="en"><head><meta charset="utf-8">
     return '<span class="ref">' + v + '</span>';
   };
   const actionCell = (p) => p.data.reconciliation?.status === 'pending_approval'
-    ? '<button class="approve-btn" data-recipient="' + p.data.recipient + '" data-rail="' + p.data.rail + '" data-amt="' + p.data.amountUsd + '">Approve</button>'
+    ? '<button class="approve-btn" data-recipient="' + p.data.recipient + '" data-rail="' + p.data.rail + '" data-amt="' + p.data.amountUsd + '" data-est="' + (p.data.estimatedCostUsd ?? '') + '">Approve</button>'
     : '';
   const cols = [
     { headerName:'Time', field:'ts', width:88, valueFormatter:p => p.value ? p.value.slice(11,19) : '', cellClass:'ref' },
@@ -250,7 +250,8 @@ const PAGE = `<!doctype html><html lang="en"><head><meta charset="utf-8">
     const b = e.target.closest('.approve-btn'); if (!b) return;
     b.disabled = true; b.textContent = '\\u2026';
     await fetch('/api/approve', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ recipient:b.dataset.recipient, rail:b.dataset.rail, amountUsd:Number(b.dataset.amt) }) });
+      body: JSON.stringify({ recipient:b.dataset.recipient, rail:b.dataset.rail, amountUsd:Number(b.dataset.amt),
+        estimatedCostUsd: b.dataset.est ? Number(b.dataset.est) : undefined }) });
     load();
   });
 
@@ -262,7 +263,7 @@ createServer(async (req, res) => {
     if (req.method === 'POST' && req.url.startsWith('/api/instruct')) {
       const { text = '' } = JSON.parse((await readBody(req)) || '{}');
       const { recipients, policy, interpretation, parsedBy } = await interpret(text || SAMPLE.label, SAMPLE.recipients);
-      clear();
+      // Append-only: new instructions ADD to the audit trail (never wipe MCP/agent history).
       // The instruction itself is the first audit-trail entry: what the human asked for.
       record({ event: 'INSTRUCTED', reasoning: interpretation, detail: text, decidedBy: parsedBy });
       await payBatch({ label: (text || SAMPLE.label).slice(0, 80), recipients }, { ...POLICY, ...policy }, { dryRun: !live });
@@ -270,7 +271,7 @@ createServer(async (req, res) => {
       return res.end(JSON.stringify({ ok: true, interpretation }));
     }
     if (req.method === 'POST' && req.url.startsWith('/api/approve')) {
-      const { recipient = 'unknown', rail = 'fiat', amountUsd = 0 } = JSON.parse((await readBody(req)) || '{}');
+      const { recipient = 'unknown', rail = 'fiat', amountUsd = 0, estimatedCostUsd } = JSON.parse((await readBody(req)) || '{}');
       const r = { id: recipient };
       let exec;
       try {
@@ -280,7 +281,7 @@ createServer(async (req, res) => {
       } catch (e) { exec = { ok: false, status: 'ERROR', ref: null, reason: e.message }; }
       const row = record({
         event: exec.ok ? 'PAID' : 'FAILED', recipient, rail, amountUsd,
-        estimatedCostUsd: rail === 'pyusd' ? 0.01 : undefined,
+        estimatedCostUsd, // carried from the escalated row's real estimate — never a naive flat fee
         reasoning: 'approved by operator', decidedBy: 'approved',
         status: exec.status, ref: exec.ref, ...(exec.reason ? { detail: exec.reason } : {}),
       });

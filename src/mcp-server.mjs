@@ -5,7 +5,7 @@
 // Run:  node src/mcp-server.mjs
 import { decideRoute } from './router.mjs';
 import { payBatch } from './pylot.mjs';
-import { readAll } from './ledger.mjs';
+import { readAll, record } from './ledger.mjs';
 
 let Server, StdioServerTransport, types;
 try {
@@ -36,7 +36,11 @@ const TOOLS = [
     description: 'Route and settle a batch of payouts (dry-run unless PYLOT_LIVE=1). Logs to the audit ledger.',
     inputSchema: {
       type: 'object', required: ['label', 'recipients'],
-      properties: { label: { type: 'string' }, recipients: { type: 'array' }, approvalThresholdUsd: { type: 'number' } },
+      properties: {
+        label: { type: 'string' }, recipients: { type: 'array' },
+        approvalThresholdUsd: { type: 'number' },
+        allowPyusd: { type: 'boolean', description: 'false -> fiat only (e.g. "no crypto")' },
+      },
     },
   },
   { name: 'get_ledger', description: 'Return the audit ledger: every routing decision, its reasoning, and outcome.', inputSchema: { type: 'object', properties: {} } },
@@ -50,9 +54,16 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   const { name, arguments: a = {} } = req.params;
   if (name === 'route_payout') return text(decideRoute(a));
   if (name === 'pay_batch') {
+    // The agent's instruction is the first audit-trail entry, same as the dashboard path.
+    record({
+      event: 'INSTRUCTED', detail: a.label, decidedBy: 'agent',
+      reasoning: `Agent (via MCP): paying ${a.recipients?.length ?? 0} recipients`
+        + (a.approvalThresholdUsd != null ? `; hold anything >= $${a.approvalThresholdUsd} for approval` : '')
+        + (a.allowPyusd === false ? '; PYUSD disabled — fiat only' : ''),
+    });
     const rows = await payBatch(
       { label: a.label, recipients: a.recipients },
-      { approvalThresholdUsd: a.approvalThresholdUsd },
+      { approvalThresholdUsd: a.approvalThresholdUsd, ...(a.allowPyusd != null && { allowPyusd: a.allowPyusd }) },
       { dryRun: process.env.PYLOT_LIVE !== '1' },
     );
     return text(rows);
