@@ -15,6 +15,8 @@ direction — paying people worldwide — where PayPal's mass-payout reach and P
 moat and where a stablecoin's properties are actually load-bearing (cross-border, instant,
 permissionless settlement).
 
+**Live demo:** <https://pylot-crm4.onrender.com> — hosted on Render (free tier: first load after idle takes ~1 min to wake). Type an instruction like *"pay only the editor and director, no crypto, hold over $120"* and watch the agent route, escalate, and reconcile. Safe dry-run — no funds move.
+
 ## Quick start (zero install, safe dry-run)
 
 ```bash
