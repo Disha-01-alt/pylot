@@ -105,6 +105,10 @@ const PAGE = `<!doctype html><html lang="en"><head><meta charset="utf-8">
   #qf { background:var(--card); border:1px solid var(--line2); border-radius:3px; padding:6px 11px;
     font-size:12px; color:var(--ink); font-family:var(--sans); outline:none; width:320px; transition:border-color .15s; }
   #qf:focus { border-color:var(--blue); }
+  #export-btn { background:var(--card); border:1px solid var(--line2); border-radius:3px; padding:6px 13px;
+    font-size:10.5px; font-family:var(--mono); letter-spacing:.6px; color:var(--slate); cursor:pointer; transition:border-color .15s; }
+  #export-btn:hover { border-color:var(--blue); color:var(--blue); }
+  #updated { margin-left:auto; font-size:10.5px; color:var(--faint); font-family:var(--mono); }
   .pill { padding:1.5px 8px; border-radius:2px; font-size:10px; font-weight:600; white-space:nowrap;
     letter-spacing:.6px; font-family:var(--mono); text-transform:uppercase; border:1px solid transparent; }
   .rail-pyusd { background:#e8eefa; color:var(--blue); border-color:#c6d6ef; }
@@ -151,6 +155,8 @@ const PAGE = `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <div class="gridbar">
   <span class="k">AUDIT LEDGER</span>
   <input id="qf" placeholder="Filter — recipient, rail, status, reasoning&hellip;" autocomplete="off">
+  <button id="export-btn" title="Export the audit ledger as CSV">Export CSV</button>
+  <span id="updated"></span>
 </div>
 <div id="grid" class="ag-theme-quartz"></div>
 <div class="stack">
@@ -190,7 +196,7 @@ const PAGE = `<!doctype html><html lang="en"><head><meta charset="utf-8">
         const BY = { rule:'policy engine', 'rule-fallback':'policy engine', rules:'policy engine', llm:'Claude', approved:'operator' };
         return p.value ? '<span class="by">'+(BY[p.value] ?? p.value)+'</span>' : '';
       } },
-    { headerName:'Status', width:152, valueGetter:p => p.data.reconciliation?.status,
+    { headerName:'Status', width:168, valueGetter:p => p.data.reconciliation?.status,
       cellRenderer:p => p.value ? pill('rc-'+p.value, p.value.replace(/_/g,' ')) : '' },
     { headerName:'Action', width:104, cellRenderer:actionCell, enableCellChangeFlash:false },
     { headerName:'Reasoning', field:'reasoning', flex:1, minWidth:250, wrapText:true, autoHeight:true },
@@ -227,7 +233,11 @@ const PAGE = `<!doctype html><html lang="en"><head><meta charset="utf-8">
     ];
     document.querySelector('#tiles').innerHTML = tiles.map(([h,n,l]) =>
       '<div class="tile ' + h + '"><div class="n">'+n+'</div><div class="l">'+l+'</div></div>').join('');
+    document.querySelector('#updated').textContent = 'updated ' + new Date().toTimeString().slice(0,8);
   }
+
+  document.querySelector('#export-btn').addEventListener('click', () =>
+    api.exportDataAsCsv({ fileName: 'pylot-audit-ledger.csv' }));
 
   document.querySelector('#agent-form').addEventListener('submit', async (ev) => {
     ev.preventDefault();
