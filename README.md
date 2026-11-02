@@ -83,17 +83,11 @@ Deliberately **unused**: Disputes, Subscriptions, Catalog, Orders/checkout. (Nat
 - **PYUSD leg is on-chain/testnet** — the self-serve Payouts endpoint can't send PYUSD; production
   would use Enterprise Payouts (separate onboarding).
 
-## Build status (per the proposal's phases)
+## More docs
 
-- [x] Phase 1 — grounding / project spine
-- [x] Phase 2 — both rails (dry-run; live wired behind env)
-- [x] Phase 3 — decision brain (deterministic rules + optional, account-isolated LLM for ambiguous cases) + self-checks
-- [x] Phase 4 — splits, threshold escalation, failure handling
-- [x] Phase 5 — audit ledger + reporting/on-chain reconciliation + AG Grid dashboard
-- [x] Phase 6 — hardening (precise payout-batch reconciliation, live receiver fallback,
-      preflight scripts, Orders V2 pay-with-crypto treasury funding). **See `RUNBOOK.md`**
-      for the live run + video; `INTEGRATION.md` is the PayPal-developer integration guide.
-- [ ] Final: record the < 3-min demo video (operator step — `RUNBOOK.md` has the shot list)
+- [`INTEGRATION.md`](INTEGRATION.md) — how Pylot plugs into PayPal's platform today, and the five
+  integration points that would make it native (written for PayPal developers).
+- [`RUNBOOK.md`](RUNBOOK.md) — operator steps for a live run (sandbox fiat + testnet PYUSD).
 
 ## License
 
