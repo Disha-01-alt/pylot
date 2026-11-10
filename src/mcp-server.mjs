@@ -22,6 +22,7 @@ const TOOLS = [
   {
     name: 'route_payout',
     description: 'Decide the best rail (fiat or PYUSD) for one payout, with reasoning. No funds move.',
+    annotations: { title: 'Route a payout (decision only)', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     inputSchema: {
       type: 'object', required: ['country', 'amountUsd'],
       properties: {
@@ -34,6 +35,8 @@ const TOOLS = [
   {
     name: 'pay_batch',
     description: 'Route and settle a batch of payouts (dry-run unless PYLOT_LIVE=1). Logs to the audit ledger.',
+    // MONEY MOVES when PYLOT_LIVE=1: declared destructive + open-world so MCP hosts warn first.
+    annotations: { title: 'Pay a batch (moves funds in live mode)', readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: true },
     inputSchema: {
       type: 'object', required: ['label', 'recipients'],
       properties: {
@@ -43,7 +46,9 @@ const TOOLS = [
       },
     },
   },
-  { name: 'get_ledger', description: 'Return the audit ledger: every routing decision, its reasoning, and outcome.', inputSchema: { type: 'object', properties: {} } },
+  { name: 'get_ledger', description: 'Return the audit ledger: every routing decision, its reasoning, and outcome.',
+    annotations: { title: 'Read the audit ledger', readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    inputSchema: { type: 'object', properties: {} } },
 ];
 
 const text = (obj) => ({ content: [{ type: 'text', text: JSON.stringify(obj, null, 2) }] });

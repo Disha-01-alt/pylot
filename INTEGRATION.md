@@ -62,6 +62,11 @@ executes, the ledger proves it.
 5. **Honest estimates** — routing costs come from a labelled static model
    (`src/costModel.mjs`), never presented as PayPal quotes, because no pre-payout
    fee/FX quote endpoint exists today.
+6. **Pinned credential destinations** — `PAYPAL_CLIENT_ID`/`PAYPAL_SECRET` are only
+   ever sent to PayPal's two hardcoded hosts (`api-m.paypal.com` / sandbox); no
+   env-supplied URL can redirect them (`src/rails/paypalAuth.mjs`). The MCP tools
+   declare safety annotations (`pay_batch` is marked destructive/open-world) so any
+   MCP host can warn the user before a money-moving call.
 
 ## What PayPal would ship to make this native (the ask)
 

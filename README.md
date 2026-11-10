@@ -89,6 +89,15 @@ Deliberately **unused**: Disputes, Subscriptions, Catalog, Orders/checkout. (Nat
   integration points that would make it native (written for PayPal developers).
 - [`RUNBOOK.md`](RUNBOOK.md) — operator steps for a live run (sandbox fiat + testnet PYUSD).
 
+## Security & trust
+
+Credentials are only ever sent to PayPal's two pinned hosts (`src/rails/paypalAuth.mjs`);
+MCP tools declare safety annotations (`pay_batch` is marked destructive so hosts warn
+before money moves); the MCP layer has its own test coverage (`test/mcp.test.mjs`).
+Independently indexed:
+
+[![M8ven Score](https://m8ven.ai/badge/mcp/disha-01-alt-pylot-15cdmt?v=c84a16bf8f4f3119d034e3ccb7a3c63b)](https://m8ven.ai/mcp/disha-01-alt-pylot-15cdmt?s=readme)
+
 ## License
 
 MIT

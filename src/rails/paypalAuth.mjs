@@ -1,5 +1,7 @@
 // paypalAuth.mjs — shared PayPal REST base URL + OAuth token.
 // Used by the Payouts rail (write) and the reconciler (Reporting, read).
+// SECURITY: credentials are only ever sent to the two PINNED PayPal hosts below —
+// BASE cannot resolve to any other destination (no env-supplied URL, no redirect).
 export const BASE = process.env.PAYPAL_ENV === 'live'
   ? 'https://api-m.paypal.com'
   : 'https://api-m.sandbox.paypal.com';
