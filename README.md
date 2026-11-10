@@ -96,7 +96,7 @@ MCP tools declare safety annotations (`pay_batch` is marked destructive so hosts
 before money moves); the MCP layer has its own test coverage (`test/mcp.test.mjs`).
 Independently indexed:
 
-[![M8ven Score](https://m8ven.ai/badge/mcp/disha-01-alt-pylot-15cdmt?v=c84a16bf8f4f3119d034e3ccb7a3c63b)](https://m8ven.ai/mcp/disha-01-alt-pylot-15cdmt?s=readme)
+[![M8ven Verified](https://m8ven.ai/badge/mcp/disha-01-alt-pylot-15cdmt?variant=verified)](https://m8ven.ai/mcp/disha-01-alt-pylot-15cdmt?s=readme)
 
 ## License
 
