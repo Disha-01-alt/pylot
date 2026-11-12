@@ -27,7 +27,7 @@ Agent Toolkit itself:
 | Tool | Contract |
 |---|---|
 | `route_payout` | `{country, amountUsd, preference?, hasCryptoWallet?}` → rail + cost/ETA estimate + reasoning. Pure decision, no side effects. |
-| `pay_batch` | `{label, recipients[], approvalThresholdUsd?}` → invoices the obligation, routes & settles each payout, returns ledger rows. Dry-run unless `PYLOT_LIVE=1`. |
+| `pay_batch` | `{label, recipients[], approvalThresholdUsd?, allowPyusd?}` → invoices the obligation, routes & settles each payout (set `allowPyusd:false` for "no crypto" policies), returns ledger rows. Dry-run unless `PYLOT_LIVE=1`. |
 | `get_ledger` | `{}` → full audit trail: decision reasoning, rail, refs (payout batch ids / tx hashes), reconciliation status. |
 
 Plug into any MCP client (Claude Desktop/Code, Cursor, Cline):

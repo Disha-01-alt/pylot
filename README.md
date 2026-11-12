@@ -27,8 +27,9 @@ node dashboard.mjs # treasury dashboard + NL agent box -> http://localhost:3000 
 ```
 
 Everything defaults to **dry-run** — no credentials, no funds moved. The demo shows a payout
-settled on fiat, two routed to PYUSD (one because the fiat corridor is unavailable, one because
-PYUSD is cheaper), one escalated for approval over the threshold, and one deliberate failure.
+settled on fiat, three routed to PYUSD (one because the fiat corridor is unavailable, one because
+PYUSD is cheaper, one an ambiguous ≥$500 case judged by the LLM — or the rule fallback when no
+key is set), one escalated for approval over the threshold, and one deliberate failure.
 
 ## Going live
 
